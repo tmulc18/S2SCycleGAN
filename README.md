@@ -1,10 +1,10 @@
 # S2SCycleGAN
 Attempt at speech2speech using CycleGAN
 
-#Audio Generation
+# Audio Generation
 Audio is converted using SEGAN method
 
-#Data
+# Data
 Download data with `downloadData.sh`
 
 
