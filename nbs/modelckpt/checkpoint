@@ -1,2 +1,2 @@
-model_checkpoint_path: "supervised_spec.ckpt"
-all_model_checkpoint_paths: "supervised_spec.ckpt"
+model_checkpoint_path: "modelGAN.ckpt"
+all_model_checkpoint_paths: "modelGAN.ckpt"
