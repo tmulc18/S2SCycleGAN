@@ -4,3 +4,4 @@
 **/.DS_Store
 data/*
 tb_logs/*
+!tb_logs/.placeholder
