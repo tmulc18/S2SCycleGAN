@@ -5,3 +5,5 @@
 data/*
 tb_logs/*
 !tb_logs/.placeholder
+tacotron/data/*
+!tacotro/data/.placeholder
