@@ -28,12 +28,13 @@ class Graph:
         
         with self.graph.as_default():
             if is_training:
-                self.x, self.y, self.z, self.num_batch = get_batch()
+                self.x, self.q, self.y, self.z, self.num_batch = get_batch()
                 self.decoder_inputs = shift_by_one(self.y)
                 
                 # Make sure that batch size was multiplied by # gpus.
                 # Now we split the mini-batch data by # gpus.
                 self.x = tf.split(self.x, hp.num_gpus, 0)
+                self.q = tf.split(self.q, hp.num_gpus, 0)
                 self.y = tf.split(self.y, hp.num_gpus, 0)
                 self.z = tf.split(self.z, hp.num_gpus, 0)
                 self.decoder_inputs = tf.split(self.decoder_inputs, hp.num_gpus, 0)
