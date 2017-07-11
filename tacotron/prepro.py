@@ -66,7 +66,7 @@ def load_train_data():
     """We train on the whole data but the last num_samples."""
     texts, sound_files = create_train_data()
     if hp.sanity_check: # We use a single mini-batch for training to overfit it.
-        texts, sound_files = texts[:hp.batch_size]*1, sound_files[:hp.batch_size]*1
+        texts, sound_files = texts[:hp.batch_size]*10, sound_files[:hp.batch_size]*10
     else:
         texts, sound_files = texts[:-hp.num_samples], sound_files[:-hp.num_samples]
     return texts, sound_files

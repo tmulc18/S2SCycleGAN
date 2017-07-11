@@ -14,8 +14,8 @@ class Hyperparams:
     #text_file = 'WEB/text.csv'
     #sound_fpath = 'WEB'
     data_path = 'data/'
-    fpath = '../data/female_us/'
-    mpath = '../data/male_us/'
+    fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
+    mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
 
     bin_size_x = (2,3)
     bin_size_y = (2,3)
@@ -38,7 +38,7 @@ class Hyperparams:
     use_log_magnitude = True # if False, use magnitude
     
     # model
-    embed_size = 256 # alias = E
+    #embed_size = 256 # alias = E
     embed_size = n_mels
     encoder_num_banks = 16
     decoder_num_banks = 8
@@ -51,12 +51,12 @@ class Hyperparams:
     logdir = "logdir" if not sanity_check else "logdir_s"
     outputdir = 'samples' if not sanity_check else "samples_s"
     batch_size = 32
-    num_epochs = 10000 if not sanity_check else 2 # Paper => 2M global steps!
-    loss_type = "l2" # Or you can test "l2"
+    num_epochs = 10000 if not sanity_check else 5 # Paper => 2M global steps!
+    loss_type = "l1" # Or you can test "l2"
     num_samples = 32
     
     # etc
-    num_gpus = 1 # If you have multiple gpus, adjust this option, and increase the batch size
+    num_gpus = 2 # If you have multiple gpus, adjust this option, and increase the batch size
                  # and run `train_multiple_gpus.py` instead of `train.py`.
     target_zeros_masking = False # If True, we mask zero padding on the target, 
                                  # so exclude them from the loss calculation.     
