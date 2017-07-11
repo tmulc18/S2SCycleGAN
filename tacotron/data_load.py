@@ -176,3 +176,44 @@ def get_batch():
             z = tf.log(z+1e-10)
             
     return x,q, y, z, num_batch
+
+def get_batch_eval():
+    with tf.device('/cpu:0'):
+        texts  = load_eval_data()
+
+        # Convert to tensor
+        texts = tf.convert_to_tensor(texts)
+             
+        # Create Queues
+        text = tf.train.slice_input_producer([texts], shuffle=True)
+
+        @producer_func
+        def get_text_and_spectrograms(_inputs):
+            '''From `_inputs`, which has been fetched from slice queues,
+               makes text, spectrogram, and magnitude,
+               then enqueue them again. 
+            '''
+            _text = _inputs
+            
+            # Processing
+            #_text = np.fromstring(_text, np.int32) # byte to int
+            _spectrogram_in, _magnitude_in = get_spectrograms(_text)
+             
+
+            _spectrogram_in = reduce_frames(_spectrogram_in, hp.win_length//hp.hop_length, hp.r)
+            _magnitude_in = reduce_frames(_magnitude_in, hp.win_length//hp.hop_length, hp.r)
+
+            return _spectrogram_in,_magnitude_in
+
+        x,q = get_text_and_spectrograms(inputs=[text], 
+                                            dtypes=[tf.float32,tf.float32],
+                                            capacity=128,
+                                            num_threads=32)
+
+        x = tf.train.batch([x],
+                            shapes=[(None, hp.n_mels*hp.r)],
+                            num_threads=32,
+                            batch_size=hp.batch_size, 
+                            capacity=hp.batch_size*32,   
+                            dynamic_pad=True)
+    return x

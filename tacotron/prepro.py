@@ -12,6 +12,7 @@ import os
 import re
 import glob
 import scipy.io.wavfile as wavfile
+from utils import get_spectrograms, reduce_frames
 
 from hyperparams import Hyperparams as hp
 import numpy as np
@@ -78,11 +79,19 @@ def load_eval_data():
     else:
         texts = texts[-hp.num_samples:]
     
-    X = np.zeros(shape=[len(texts), hp.max_len], dtype=np.int32)
-    for i, text in enumerate(texts):
-        _text = np.fromstring(text, np.int32) # byte to int 
-        X[i, :len(_text)] = _text
+    return texts
+    #print texts
+    # texts = tf.convert_to_tensor(texts)
+    # _spectrogram_in, _magnitude_in = get_spectrograms(texts)
+    # _spectrogram_in = reduce_frames(_spectrogram_in, hp.win_length//hp.hop_length, hp.r)
+    # X = _spectrogram_in
+
     
-    return X
+    # X = np.zeros(shape=[len(texts), hp.max_len], dtype=np.int32)
+    # for i, text in enumerate(texts):
+    #     _text = np.fromstring(text, np.int32) # byte to int 
+    #     X[i, :len(_text)] = _text
+    
+    # return X
  
 

@@ -12,7 +12,7 @@ import os
 import librosa
 from tqdm import tqdm
 
-from data_load import get_batch
+from data_load import get_batch, get_batch_eval
 from hyperparams import Hyperparams as hp
 from modules import *
 from networks import encode, decode1, decode2
@@ -34,7 +34,8 @@ class Graph:
             if is_training:
                 self.x, self.q,self.y, self.z, self.num_batch = get_batch()
             else: # Evaluation
-                self.x = tf.placeholder(tf.float32, shape=(None, None,hp.n_mels*hp.r))
+                #self.x = tf.placeholder(tf.float32, shape=(None, None,hp.n_mels*hp.r))
+                self.x = get_batch_eval()
                 self.y = tf.placeholder(tf.float32, shape=(None, None, hp.n_mels*hp.r))
 
             self.decoder_inputs = shift_by_one(self.y)
