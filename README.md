@@ -5,7 +5,7 @@ Attempt at speech2speech using CycleGAN
 Audio is converted using SEGAN method.  See nbs folder for project.
 
 # Tacotron
-Model originated from (here)[https://github.com/Kyubyong/tacotron] and was updated to take audio as input.  The updated model will be used as the generator.  Work still needs to be done for the discriminator.
+Model originated from [here](https://github.com/Kyubyong/tacotron) and was updated to take audio as input.  The updated model will be used as the generator.  Work still needs to be done for the discriminator.
 
 # Data
 Download data with male and female data with `downloadData.sh`
