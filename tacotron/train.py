@@ -34,8 +34,8 @@ class Graph:
             if is_training:
                 self.x, self.q,self.y, self.z, self.num_batch = get_batch()
             else: # Evaluation
-                #self.x = tf.placeholder(tf.float32, shape=(None, None,hp.n_mels*hp.r))
-                self.x = get_batch_eval()
+                self.x = tf.placeholder(tf.float32, shape=(None, None,hp.n_mels*hp.r))
+                # self.x = get_batch_eval()
                 self.y = tf.placeholder(tf.float32, shape=(None, None, hp.n_mels*hp.r))
 
             self.decoder_inputs = shift_by_one(self.y)

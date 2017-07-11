@@ -185,7 +185,7 @@ def get_batch_eval():
         texts = tf.convert_to_tensor(texts)
              
         # Create Queues
-        text = tf.train.slice_input_producer([texts], shuffle=True)
+        text = tf.train.slice_input_producer([texts], shuffle=False)
 
         @producer_func
         def get_text_and_spectrograms(_inputs):

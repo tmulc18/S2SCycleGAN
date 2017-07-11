@@ -20,6 +20,7 @@ class Hyperparams:
     bin_size_x = (2,3)
     bin_size_y = (2,3)
 
+    max_len = 48
     # max_len = 100 if not sanity_check else 30 # maximum length of text
     # min_len = 10 if not sanity_check else 20 # minimum length of text
     

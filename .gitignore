@@ -7,6 +7,6 @@ tb_logs/*
 !tb_logs/.placeholder
 tacotron/data/*
 !tacotro/data/.placeholder
-tacotron/logdir_s
-tacotron/sample_s
+tacotron/logdir_s/*
+tacotron/sample_s/*
 tacotron/*.pyc

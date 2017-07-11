@@ -79,19 +79,23 @@ def load_eval_data():
     else:
         texts = texts[-hp.num_samples:]
     
-    return texts
-    #print texts
-    # texts = tf.convert_to_tensor(texts)
-    # _spectrogram_in, _magnitude_in = get_spectrograms(texts)
-    # _spectrogram_in = reduce_frames(_spectrogram_in, hp.win_length//hp.hop_length, hp.r)
-    # X = _spectrogram_in
+    # return texts
+    X = np.zeros([len(texts),hp.max_len,hp.n_mels*hp.r])
+    print texts
+    #texts = tf.convert_to_tensor(texts)
+    for i,text in enumerate(texts):
+        _spectrogram_in, _magnitude_in = get_spectrograms(text)
+        _spectrogram_in = reduce_frames(_spectrogram_in, hp.win_length//hp.hop_length, hp.r)
+        X[i,:_spectrogram_in.shape[0],:] = _spectrogram_in
+        # print(_spectrogram_in.shape)
 
-    
-    # X = np.zeros(shape=[len(texts), hp.max_len], dtype=np.int32)
+
+    # X = np.zeros(shape=[len(texts), hp.n_mels*hp.r], dtype=np.float32)
     # for i, text in enumerate(texts):
+    #     _spectrogram_in, _magnitude_in = get_spectrograms(texts)
     #     _text = np.fromstring(text, np.int32) # byte to int 
-    #     X[i, :len(_text)] = _text
+    #     X[i, :len(_spectrogram_in)] = _spectrogram_in
     
-    # return X
+    return X
  
 
