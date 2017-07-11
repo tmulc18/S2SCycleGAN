@@ -8,7 +8,7 @@ https://www.github.com/kyubyong/tacotron
 class Hyperparams:
     '''Hyper parameters'''
     # mode
-    sanity_check = True
+    sanity_check = False
     
     # data
     #text_file = 'WEB/text.csv'
@@ -51,7 +51,7 @@ class Hyperparams:
     logdir = "logdir" if not sanity_check else "logdir_s"
     outputdir = 'samples' if not sanity_check else "samples_s"
     batch_size = 32
-    num_epochs = 10000 if not sanity_check else 5 # Paper => 2M global steps!
+    num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
     loss_type = "l1" # Or you can test "l2"
     num_samples = 32
     

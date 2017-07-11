@@ -119,7 +119,7 @@ def main():
     
     with g.graph.as_default():
         # Load vocabulary 
-        char2idx, idx2char = load_vocab()
+        #char2idx, idx2char = load_vocab()
          
         # Training 
         sv = tf.train.Supervisor(logdir=hp.logdir,
