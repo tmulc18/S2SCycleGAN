@@ -47,7 +47,6 @@ def eval():
             timesteps = 100  # Adjust this number as you want
             outputs1 = np.zeros((hp.num_samples, timesteps, hp.n_mels * hp.r), np.float32)  # hp.n_mels*hp.r
             for j in range(timesteps):
-                print(j)
                 _outputs1 = sess.run(g.outputs1, {g.x: X, g.y: outputs1})
                 # _outputs1 = sess.run(g.outputs1, {g.y: outputs1})
                 outputs1[:, j, :] = _outputs1[:, j, :]
@@ -72,7 +71,6 @@ def eval():
     for i,s in enumerate(outputs2):
             # write text
             #fout.write(str(i) + "\t" + "".join(idx2char[idx] for idx in np.fromstring(x, np.int32) if idx != 0) + "\n")
-            print('made it out')
             s = restore_shape(s, hp.win_length//hp.hop_length, hp.r)
                          
             # generate wav files

@@ -8,5 +8,7 @@ tb_logs/*
 tacotron/data/*
 !tacotro/data/.placeholder
 tacotron/logdir_s/*
-tacotron/sample_s/*
+tacotron/samples_s/*
 tacotron/*.pyc
+tacotron/logdir/*
+tacotron/samples/*

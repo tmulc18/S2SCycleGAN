@@ -10,6 +10,7 @@ Model originated from [here](https://github.com/Kyubyong/tacotron) and was updat
 # Data
 Download data with male and female data with `downloadData.sh`
 
+Or get the data [here](https://www.dropbox.com/sh/ct3bbmerxckbzej/AABXpG8T4z1dUFdswchZABosa?dl=0)
 
 ## Port Audio and PyAudio
 
