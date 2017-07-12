@@ -105,9 +105,9 @@ class Graph:
                 self.optimizer = tf.train.AdamOptimizer(learning_rate=hp.lr)
 
                 grad_d,var_d = zip(*self.optimizer.compute_gradients(self.dis_loss,var_list=dvars))
-                grad_d_clipped ,_= tf.clip_by_global_norm(grad_d,.5)
+                grad_d_clipped ,_= tf.clip_by_global_norm(grad_d,5.)
                 grad_g,var_g = zip(*self.optimizer.compute_gradients(self.gen_loss,var_list=gvars))
-                grad_g_clipped ,_= tf.clip_by_global_norm(grad_g,.5)
+                grad_g_clipped ,_= tf.clip_by_global_norm(grad_g,5.)
                 self.train_op_dis=self.optimizer.apply_gradients(zip(grad_d_clipped,var_d))
                 self.train_op_gen=self.optimizer.apply_gradients(zip(grad_g_clipped,var_g))
 
@@ -116,7 +116,7 @@ class Graph:
 
                 # Summmary 
                 tf.summary.scalar('dis_loss_real', self.dis_loss_real)
-                tf.summary.scalar('dis_loss_fake', self.dis_loss_real)
+                tf.summary.scalar('dis_loss_fake', self.dis_loss_fake)
                 tf.summary.scalar('dis_loss', self.dis_loss)
                 tf.summary.scalar('gen_loss', self.gen_loss)
                 
