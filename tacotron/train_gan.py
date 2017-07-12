@@ -103,8 +103,16 @@ class Graph:
 
                 self.global_step = tf.Variable(0, name='global_step', trainable=False)
                 self.optimizer = tf.train.AdamOptimizer(learning_rate=hp.lr)
-                self.train_op_dis = self.optimizer.minimize(self.dis_loss, global_step=self.global_step,var_list=dvars)
-                self.train_op_gen = self.optimizer.minimize(self.gen_loss, global_step=self.global_step,var_list=gvars)
+
+                grad_d,var_d = zip(*self.optimizer.compute_gradients(self.dis_loss,var_list=dvars))
+                grad_d_clipped ,_= tf.clip_by_global_norm(grad_d,.5)
+                grad_g,var_g = zip(*self.optimizer.compute_gradients(self.gen_loss,var_list=gvars))
+                grad_g_clipped ,_= tf.clip_by_global_norm(grad_g,.5)
+                self.train_op_dis=self.optimizer.apply_gradients(zip(grad_d_clipped,var_d))
+                self.train_op_gen=self.optimizer.apply_gradients(zip(grad_g_clipped,var_g))
+
+                # self.train_op_dis = self.optimizer.minimize(self.dis_loss, global_step=self.global_step,var_list=dvars)
+                # self.train_op_gen = self.optimizer.minimize(self.gen_loss, global_step=self.global_step,var_list=gvars)
 
                 # Summmary 
                 tf.summary.scalar('dis_loss_real', self.dis_loss_real)
@@ -144,7 +152,8 @@ def main():
                 print('Maybe okay')
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
                     sess.run(g.train_op_dis)
-                    sess.run(g.train_op_gen)
+                    for _ in range(k):
+                        sess.run(g.train_op_gen)
                 
                 # Write checkpoint files at every epoch
                 gs = sess.run(g.global_step) 

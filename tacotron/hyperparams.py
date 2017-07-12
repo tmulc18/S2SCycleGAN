@@ -55,6 +55,7 @@ class Hyperparams:
     outputdir = "samples_s" if  sanity_check else "samples_gan" #'samples'
     batch_size = 32
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
+    k = 2 # number of times to train the generator for each discriminator train
     loss_type = "l1" # Or you can test "l2"
     num_samples = 32
     
