@@ -15,10 +15,10 @@ class Hyperparams:
     #text_file = 'WEB/text.csv'
     #sound_fpath = 'WEB'
     data_path = 'data/'
-    fpath = '../data/female_us/'
-    mpath = '../data/male_us/'
-    # fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
-    # mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
+    # fpath = '../data/female_us/'
+    # mpath = '../data/male_us/'
+    fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
+    mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
 
     bin_size_x = (2,3)
     bin_size_y = (2,3)
