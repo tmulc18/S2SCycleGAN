@@ -9,13 +9,16 @@ class Hyperparams:
     '''Hyper parameters'''
     # mode
     sanity_check = False
+    gan_mode = True
     
     # data
     #text_file = 'WEB/text.csv'
     #sound_fpath = 'WEB'
     data_path = 'data/'
-    fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
-    mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
+    fpath = '../data/female_us/'
+    mpath = '../data/male_us/'
+    # fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
+    # mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
 
     bin_size_x = (2,3)
     bin_size_y = (2,3)
@@ -48,8 +51,8 @@ class Hyperparams:
     
     # training scheme
     lr = 0.0005 # Paper => Exponential decay
-    logdir = "logdir" if not sanity_check else "logdir_s"
-    outputdir = 'samples' if not sanity_check else "samples_s"
+    logdir = "logdir" if not sanity_check else "logdir_gan" if gan_mode else "logdir_s"
+    outputdir = 'samples' if not sanity_check else "samples_gan" if gan_mod  else "samples_s"
     batch_size = 32
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
     loss_type = "l1" # Or you can test "l2"

@@ -61,6 +61,14 @@ def encode(inputs, is_training=True, scope="encoder", reuse=None):
 
         ### Bidirectional GRU
         memory = gru(enc, hp.embed_size//2, True) # (N, T, E)
+
+        if 'Discriminator' in scope:
+            memory = memory[:,-1,:]
+            memory=tf.normalize(memory,reuse=reuse)
+            W_dis = tf.get_variable("weights",shape=[hp.n_mels*hp.r,1],reuse=reuse)
+            b_dis = tf.get_variable("bias",shape=[1],reuse=reuse)
+            memory = tf.sigmoid(tf.matmul(memory,W_dis)+b_dis)
+            #outputs = tf.layers.dense(inputs, units=hp.n_mels*hp.r, activation=tf.nn.relu, name="dense1")
     
     return memory
         
