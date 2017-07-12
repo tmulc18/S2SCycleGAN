@@ -12,3 +12,5 @@ tacotron/samples_s/*
 tacotron/*.pyc
 tacotron/logdir/*
 tacotron/samples/*
+tacotron/logdir_gan/*
+tacotrons/samples_gan/*

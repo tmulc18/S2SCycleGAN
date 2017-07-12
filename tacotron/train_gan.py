@@ -135,10 +135,14 @@ def main():
         # Training 
         sv = tf.train.Supervisor(logdir=hp.logdir,
                                  save_model_secs=0)
-        gpu_options = tf.GPUOptions(allow_growth=True)
-        with sv.managed_session(config=tf.ConfigProto(allow_soft_placement=True,gpu_options=gpu_options)) as sess:
-            for epoch in range(1, hp.num_epochs+1): 
-                if sv.should_stop(): break
+        #gpu_options = tf.GPUOptions(allow_growth=True)
+        with sv.managed_session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+            print('made it to training')
+            sess.run(g.train_op_gen)
+            for epoch in tqdm(range(1, hp.num_epochs+1)): 
+                if sv.should_stop(): 
+                    print("Something is broken");break
+                print('Maybe okay')
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
                     sess.run(g.train_op_dis)
                     sess.run(g.train_op_gen)

@@ -9,7 +9,7 @@ class Hyperparams:
     '''Hyper parameters'''
     # mode
     sanity_check = False
-    gan_mode = True
+    gan_mode = False
     
     # data
     #text_file = 'WEB/text.csv'
@@ -52,7 +52,7 @@ class Hyperparams:
     # training scheme
     lr = 0.0005 # Paper => Exponential decay
     logdir =  "logdir_s"if  sanity_check else "logdir_gan" if gan_mode else "logdir"
-    outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mod  else 'samples'
+    outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else 'samples'
     batch_size = 32
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
     loss_type = "l1" # Or you can test "l2"
