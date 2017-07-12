@@ -13,6 +13,68 @@ from modules import *
 import tensorflow as tf
 
 
+def encode_dis(inputs, is_training=True, scope="encoder_dis", reuse=None):
+    '''
+    Args:
+      inputs: A 2d tensor with shape of [N, T], dtype of int32. Should be [N,T,E] E is the now spectrogram depth
+      seqlens: A 1d tensor with shape of [N,], dtype of int32.
+      masks: A 3d tensor with shape of [N, T, 1], dtype of float32.
+      is_training: Whether or not the layer is in training mode.
+      scope: Optional scope for `variable_scope`
+      reuse: Boolean, whether to reuse the weights of a previous layer
+        by the same name.
+    
+    Returns:
+      A collection of Hidden vectors, whose shape is (N, T, E).
+    '''
+    with tf.variable_scope(scope, reuse=reuse):
+        # Load vocabulary 
+        #char2idx, idx2char = load_vocab() #no longer needed
+        
+        # Character Embedding (Should be fixed to just be spectorgrams)
+        #inputs = embed(inputs, len(char2idx), hp.embed_size) # (N, T, E)  
+        inputs = inputs
+        
+        # Encoder pre-net
+        prenet_out = prenet(inputs, is_training=is_training) # (N, T, E/2)
+        
+        # Encoder CBHG 
+        ## Conv1D bank 
+        enc = conv1d_banks(prenet_out, K=hp.encoder_num_banks, is_training=is_training) # (N, T, K * E / 2)
+        
+        ### Max pooling
+        enc = tf.layers.max_pooling1d(enc, 2, 1, padding="same")  # (N, T, K * E / 2)
+          
+        ### Conv1D projections
+        enc = conv1d(enc, hp.embed_size//2, 3, scope="conv1d_1") # (N, T, E/2)
+        enc = normalize(enc, type=hp.norm_type, is_training=is_training, 
+                            activation_fn=tf.nn.relu, scope="norm1")
+        enc = conv1d(enc, hp.embed_size//2, 3, scope="conv1d_2") # (N, T, E/2)
+        enc = normalize(enc, type=hp.norm_type, is_training=is_training, 
+                            activation_fn=None, scope="norm2")
+        enc += prenet_out # (N, T, E/2) # residual connections
+          
+        ### Highway Nets
+        for i in range(hp.num_highwaynet_blocks):
+            enc = highwaynet(enc, num_units=hp.embed_size//2, 
+                                 scope='highwaynet_{}'.format(i)) # (N, T, E/2)
+
+        ### Bidirectional GRU
+        memory = gru(enc, hp.embed_size//2, True) # (N, T, E)
+
+        ## Disciriminator output
+        memory = memory[:,-1,:]
+        memory=normalize(memory,reuse=reuse)
+        W_dis = tf.get_variable("weights",shape=[hp.n_mels,1])
+        b_dis = tf.get_variable("bias",shape=[1])
+        memory = tf.sigmoid(tf.matmul(memory,W_dis)+b_dis)
+    
+    
+    return memory
+
+
+
+
 def encode(inputs, is_training=True, scope="encoder", reuse=None):
     '''
     Args:
@@ -62,13 +124,13 @@ def encode(inputs, is_training=True, scope="encoder", reuse=None):
         ### Bidirectional GRU
         memory = gru(enc, hp.embed_size//2, True) # (N, T, E)
 
-        if 'Discriminator' in scope:
-            memory = memory[:,-1,:]
-            memory=tf.normalize(memory,reuse=reuse)
-            W_dis = tf.get_variable("weights",shape=[hp.n_mels*hp.r,1],reuse=reuse)
-            b_dis = tf.get_variable("bias",shape=[1],reuse=reuse)
-            memory = tf.sigmoid(tf.matmul(memory,W_dis)+b_dis)
-            #outputs = tf.layers.dense(inputs, units=hp.n_mels*hp.r, activation=tf.nn.relu, name="dense1")
+        # if 'Discriminator' in scope:
+        #     memory = memory[:,-1,:]
+        #     memory=tf.normalize(memory,reuse=reuse)
+        #     W_dis = tf.get_variable("weights",shape=[hp.n_mels*hp.r,1],reuse=reuse)
+        #     b_dis = tf.get_variable("bias",shape=[1],reuse=reuse)
+        #     memory = tf.sigmoid(tf.matmul(memory,W_dis)+b_dis)
+        #     #outputs = tf.layers.dense(inputs, units=hp.n_mels*hp.r, activation=tf.nn.relu, name="dense1")
     
     return memory
         

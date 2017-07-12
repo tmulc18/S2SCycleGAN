@@ -15,7 +15,7 @@ from tqdm import tqdm
 from data_load import get_batch, get_batch_eval
 from hyperparams import Hyperparams as hp
 from modules import *
-from networks import encode, decode1, decode2
+from networks import encode_dis, encode, decode1, decode2
 import numpy as np
 from prepro import *
 #from prepro import load_vocab
@@ -52,8 +52,8 @@ class Graph:
 
             with tf.variable_scope("Discriminator"):
                 print(self.y.shape)
-                self.final_state_real = encode(self.y, is_training=is_training)
-                self.final_state_fake = encode(self.outputs1_gen, is_training=is_training,reuse=True)
+                self.final_state_real = encode_dis(self.y, is_training=is_training)
+                self.final_state_fake = encode_dis(self.outputs1_gen, is_training=is_training,reuse=True)
 
 
 
