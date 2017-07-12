@@ -113,10 +113,10 @@ def main():
         #char2idx, idx2char = load_vocab()
         
         # Training
-        gpu_options = tf.GPUOptions(allow_growth=False)
+        #gpu_options = tf.GPUOptions(allow_growth=False)
         sv = tf.train.Supervisor(logdir=hp.logdir,
                                  save_model_secs=0)
-        with sv.managed_session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+        with sv.managed_session() as sess:
             for epoch in range(1, hp.num_epochs+1): 
                 if sv.should_stop(): break
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
