@@ -30,7 +30,7 @@ class Graph:
     def __init__(self, is_training=True):
         self.graph = tf.Graph()
         with self.graph.as_default():
-            tf.with_device('/cpu:0'):
+            with tf.device('/cpu:0'):
                 if is_training:
                     self.x, self.q,self.y, self.z, self.num_batch = get_batch()
                 else: # Evaluation
