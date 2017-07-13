@@ -125,6 +125,10 @@ class Graph:
                 # self.train_op_dis = self.optimizer.minimize(self.dis_loss, global_step=self.global_step,var_list=dvars)
                 # self.train_op_gen = self.optimizer.minimize(self.gen_loss, global_step=self.global_step,var_list=gvars)
 
+                # Profiling
+                options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+                run_metadata = tf.RunMetadata()
+
                 # Summmary 
                 tf.summary.scalar('dis_loss_real', self.dis_loss_real)
                 tf.summary.scalar('dis_loss_fake', self.dis_loss_fake)
@@ -153,7 +157,9 @@ def main():
         # Training 
         sv = tf.train.Supervisor(logdir=hp.logdir,
                                  save_model_secs=0)
+        options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
         gpu_options = tf.GPUOptions(allow_growth=True)
+        run_metadata = tf.RunMetadata()
         config = tf.ConfigProto(allow_soft_placement=True,gpu_options=gpu_options)
         with sv.managed_session(config=config) as sess:
             print('made it to training')
@@ -163,9 +169,15 @@ def main():
                     print("Something is broken");break
                 print('Maybe okay')
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
-                    sess.run(g.train_op_dis)
+                    sess.run(g.train_op_dis,options=options,run_metadata=run_metadata)
                     for _ in range(hp.k):
-                        sess.run(g.train_op_gen)
+                        sess.run(g.train_op_gen,options=options,run_metadata=run_metadata)
+
+                    #Profile Logging
+                    fetched_timeline = timeline.Timeline(run_metadata.step_stats)
+                    chrome_trace = fetched_timeline.generate_chrome_trace_format()
+                    with open('timeline_02_step_%d.json' % step, 'w') as f:
+                        f.write(chrome_trace)
                 
                 # Write checkpoint files at every epoch
                 gs = sess.run(g.global_step) 
