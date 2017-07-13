@@ -15,7 +15,7 @@ from tqdm import tqdm
 from data_load import get_batch, get_batch_eval
 from hyperparams import Hyperparams as hp
 from modules import *
-from networks import encode_dis, encode, decode1, decode1_gan, decode2
+from networks import encode_dis, encode, decode1, decode2
 import numpy as np
 from prepro import *
 #from prepro import load_vocab
@@ -59,13 +59,6 @@ class Graph:
 
                 # self.outputs1_gen = decode1_gan(self.memory_gen,is_training=is_training)
                 # self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
-
-
-                # self.outputs1_gen = decode1(self.decoder_inputs, 
-                #                          self.memory_gen,
-                #                          is_training=is_training) # (N, T', hp.n_mels*hp.r)
-                # self.outputs2_gen = decode2(self.outputs1_gen, is_training=is_training) # (N, T', (1+hp.n_fft//2)*hp.r)
-                # print(self.outputs1_gen.shape)
 
             with tf.variable_scope("Discriminator"):
                 print(self.y.shape)
