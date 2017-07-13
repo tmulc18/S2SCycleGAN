@@ -41,7 +41,7 @@ class Graph:
             
             with tf.variable_scope("Generator"):
                 # Encoder
-                self.memory_gen = encode(self.x, is_training=is_training) # (N, T, E)
+                self.memory_gen = encode(self.q, is_training=is_training) # (N, T, E)
                 
                 # Decoder 
                 decode_length = 50
@@ -57,14 +57,14 @@ class Graph:
                                             is_training=is_training,reuse=reuse)
                     outputs1_gen_list.append(self._outputs1_gen)
                 self.outputs1_gen = tf.concat(outputs1_gen_list,1)
+                self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
 
                 # self.outputs1_gen = decode1_gan(self.memory_gen,is_training=is_training)
                 # self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
 
             with tf.variable_scope("Discriminator"):
-                print(self.y.shape)
-                self.final_state_real = encode_dis(self.y, is_training=is_training)
-                self.final_state_fake = encode_dis(self.outputs1_gen, is_training=is_training,reuse=True)
+                self.final_state_real = encode_dis(self.z, is_training=is_training)
+                self.final_state_fake = encode_dis(self.outputs2_gen, is_training=is_training,reuse=True)
 
 
 

@@ -42,7 +42,7 @@ class Hyperparams:
     
     # model
     #embed_size = 256 # alias = E
-    embed_size = n_mels
+    embed_size = n_fft/2 #n_mels
     encoder_num_banks = 16
     decoder_num_banks = 8
     num_highwaynet_blocks = 4

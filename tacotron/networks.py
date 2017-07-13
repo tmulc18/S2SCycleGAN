@@ -65,7 +65,7 @@ def encode_dis(inputs, is_training=True, scope="encoder_dis", reuse=None):
         ## Disciriminator output
         memory = memory[:,-1,:]
         memory=normalize(memory,reuse=reuse)
-        W_dis = tf.get_variable("weights",shape=[hp.n_mels,1])
+        W_dis = tf.get_variable("weights",shape=[hp.embed_size,1])
         b_dis = tf.get_variable("bias",shape=[1])
         memory = tf.sigmoid(tf.matmul(memory,W_dis)+b_dis)
     
