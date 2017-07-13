@@ -30,7 +30,7 @@ class Hyperparams:
     # signal processing
     #sr = 22050 # Sampling rate. Paper => 24000
     sr = 16000
-    n_fft = 2048 # fft points (samples)
+    n_fft = 1024#2048 # fft points (samples)
     frame_shift = 0.0125 # seconds
     frame_length = 0.05 # seconds
     hop_length = int(sr*frame_shift) # samples  This is dependent on the frame_shift.
@@ -45,7 +45,7 @@ class Hyperparams:
     embed_size = n_fft/2 #n_mels
     encoder_num_banks = 8 # Paper => 16
     decoder_num_banks = 8
-    num_highwaynet_blocks = 4
+    num_highwaynet_blocks = 2
     r = 5 # Reduction factor. Paper => 2, 3, 5
     norm_type = 'ins'  # a normalizer function. value: bn, ln, ins, or None
     
