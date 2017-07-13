@@ -269,10 +269,10 @@ def attention_decoder_gan(memory, num_units=None, scope="attention_decoder", reu
         if num_units is None:
             num_units = inputs.get_shape().as_list[-1]
         
-        attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(num_units, 
-                                                                   memory, 
-                                                                   normalize=True,
-                                                                   probability_fn=tf.nn.softmax)
+        attention_mechanism = tf.contrib.seq2seq.LuongAttention(num_units, 
+                                                                memory, 
+                                                                normalize=True,
+                                                                probability_fn=tf.nn.softmax)
         decoder_cell = tf.contrib.rnn.GRUCell(num_units)
         cell_with_attention = tf.contrib.seq2seq.AttentionWrapper(decoder_cell, attention_mechanism, num_units)
         # initial_state = state = tf.zeros([batch_size, num_units])

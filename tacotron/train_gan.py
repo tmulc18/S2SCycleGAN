@@ -21,6 +21,7 @@ from prepro import *
 #from prepro import load_vocab
 import tensorflow as tf
 from utils import shift_by_one
+from tensorflow.python.client import timeline
 
 
 class Graph:
@@ -176,7 +177,7 @@ def main():
                     #Profile Logging
                     fetched_timeline = timeline.Timeline(run_metadata.step_stats)
                     chrome_trace = fetched_timeline.generate_chrome_trace_format()
-                    with open('timeline_02_step_%d.json' % step, 'w') as f:
+                    with open('timeline/timeline_01_step_%d.json' % step, 'w') as f:
                         f.write(chrome_trace)
                 
                 # Write checkpoint files at every epoch

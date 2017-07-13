@@ -13,4 +13,6 @@ tacotron/*.pyc
 tacotron/logdir/*
 tacotron/samples/*
 tacotron/logdir_gan/*
-tacotrons/samples_gan/*
+tacotron/samples_gan/*
+tacotron/timeline/*
+!tacotron/timeline/.placeholder
