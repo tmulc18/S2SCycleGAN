@@ -152,7 +152,7 @@ def main():
                 print('Maybe okay')
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
                     sess.run(g.train_op_dis)
-                    for _ in range(k):
+                    for _ in range(hp.k):
                         sess.run(g.train_op_gen)
                 
                 # Write checkpoint files at every epoch
