@@ -241,6 +241,10 @@ def attention_decoder(inputs, memory, num_units=None, scope="attention_decoder",
         if num_units is None:
             num_units = inputs.get_shape().as_list[-1]
         
+        # attention_mechanism = tf.contrib.seq2seq.LuongAttention(num_units, 
+        #                                                            memory, 
+        #                                                            scale=True,
+        #                                                            probability_fn=tf.nn.softmax)
         attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(num_units, 
                                                                    memory, 
                                                                    normalize=True,

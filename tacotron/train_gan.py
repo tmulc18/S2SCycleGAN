@@ -20,8 +20,9 @@ import numpy as np
 from prepro import *
 #from prepro import load_vocab
 import tensorflow as tf
-from utils import shift_by_one
+from utils import shift_by_one, restore_shape, spectrogram2wav
 from tensorflow.python.client import timeline
+from scipy.io.wavfile import write
 
 
 class Graph:
@@ -122,7 +123,6 @@ class Graph:
                 grad_g_clipped ,_= tf.clip_by_global_norm(grad_g,5.)
                 self.train_op_dis=self.optimizer.apply_gradients(zip(grad_d_clipped,var_d))
                 self.train_op_gen=self.optimizer.apply_gradients(zip(grad_g_clipped,var_g))
-
                 # self.train_op_dis = self.optimizer.minimize(self.dis_loss, global_step=self.global_step,var_list=dvars)
                 # self.train_op_gen = self.optimizer.minimize(self.gen_loss, global_step=self.global_step,var_list=gvars)
 
@@ -164,11 +164,36 @@ def main():
         config = tf.ConfigProto(allow_soft_placement=True,gpu_options=gpu_options)
         with sv.managed_session(config=config) as sess:
             print('made it to training')
-            sess.run(g.train_op_gen)
             for epoch in tqdm(range(1, hp.num_epochs+1)): 
                 if sv.should_stop(): 
                     print("Something is broken");break
-                print('Maybe okay')
+
+                # Sampling Audio
+                if epoch % hp.audio_summary == 1:
+                    print("Sampling")
+                    mname = 'gan'
+                    og,act,gen = sess.run([g.q,g.z,g.outputs2_gen])
+                    for i,(s0,s1,s2) in enumerate(zip(og,act,gen)):
+                        s0 = restore_shape(s0, hp.win_length//hp.hop_length, hp.r)
+                        s1 = restore_shape(s1, hp.win_length//hp.hop_length, hp.r)
+                        s2 = restore_shape(s2, hp.win_length//hp.hop_length, hp.r)           
+                        # generate wav files
+                        if hp.use_log_magnitude:
+                            audio0 = spectrogram2wav(np.power(np.e, s0)**hp.power)
+                            audio1 = spectrogram2wav(np.power(np.e, s1)**hp.power)
+                            audio2 = spectrogram2wav(np.power(np.e, s2)**hp.power)
+                        else:
+                            s0 = np.where(s0 < 0, 0, s0)
+                            s1 = np.where(s1 < 0, 0, s1)
+                            s2 = np.where(s2 < 0, 0, s2)
+                            audio0 = spectrogram2wav(s0**hp.power)
+                            audio1 = spectrogram2wav(s1**hp.power)
+                            audio2 = spectrogram2wav(s2**hp.power)
+                        write(hp.outputdir + "/gan_{}_org.wav".format(i), hp.sr, audio0)
+                        write(hp.outputdir + "/gan_{}_act.wav".format(i), hp.sr, audio1)
+                        write(hp.outputdir + "/gan_{}_gen.wav".format(i), hp.sr, audio2)
+                
+
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
                     sess.run(g.train_op_dis,options=options,run_metadata=run_metadata)
                     for _ in range(hp.k):
@@ -179,6 +204,7 @@ def main():
                     chrome_trace = fetched_timeline.generate_chrome_trace_format()
                     with open('timeline/timeline_01_step_%d.json' % step, 'w') as f:
                         f.write(chrome_trace)
+
                 
                 # Write checkpoint files at every epoch
                 gs = sess.run(g.global_step) 

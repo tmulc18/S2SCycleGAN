@@ -58,6 +58,9 @@ class Hyperparams:
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
     loss_type = "l1" # Or you can test "l2"
     num_samples = 32
+
+    # summary scheme
+    audio_summary = 10 #number of epochs until next sample
     
     # etc
     num_gpus = 2 # If you have multiple gpus, adjust this option, and increase the batch size
