@@ -15,7 +15,7 @@ from tqdm import tqdm
 from data_load import get_batch, get_batch_eval
 from hyperparams import Hyperparams as hp
 from modules import *
-from networks import encode_dis, encode, decode1, decode2
+from networks import encode_dis, encode, decode1, decode1_gan, decode2
 import numpy as np
 from prepro import *
 #from prepro import load_vocab
@@ -43,11 +43,21 @@ class Graph:
                 self.memory_gen = encode(self.x, is_training=is_training) # (N, T, E)
                 
                 # Decoder 
-                self.outputs1_gen = decode1(self.decoder_inputs, 
-                                         self.memory_gen,
-                                         is_training=is_training) # (N, T', hp.n_mels*hp.r)
-                self.outputs2_gen = decode2(self.outputs1_gen, is_training=is_training) # (N, T', (1+hp.n_fft//2)*hp.r)
-                print(self.outputs1_gen.shape)
+                # decode_length = 50
+                # self.outputs1_gen = tf.zeros_like(self.y)
+                # for j in range(decode_length):
+                #     self._outputs1_gen = decode1(self.outputs1_gen,
+                #                             self.memory_gen,
+                #                             is_training=is_training)
+                    
+                #     self.outputs1_gen[:,j,:] = self._outputs1_gen
+                self.outputs1_get = decode1_gan(self.memory_gen,is_training=is_training)
+                self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
+                # self.outputs1_gen = decode1(self.decoder_inputs, 
+                #                          self.memory_gen,
+                #                          is_training=is_training) # (N, T', hp.n_mels*hp.r)
+                # self.outputs2_gen = decode2(self.outputs1_gen, is_training=is_training) # (N, T', (1+hp.n_fft//2)*hp.r)
+                # print(self.outputs1_gen.shape)
 
             with tf.variable_scope("Discriminator"):
                 print(self.y.shape)
@@ -142,8 +152,9 @@ def main():
         # Training 
         sv = tf.train.Supervisor(logdir=hp.logdir,
                                  save_model_secs=0)
-        #gpu_options = tf.GPUOptions(allow_growth=True)
-        with sv.managed_session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+        gpu_options = tf.GPUOptions(allow_growth=True)
+        config = tf.ConfigProto(allow_soft_placement=True,gpu_options=gpu_options)
+        with sv.managed_session(config=config) as sess:
             print('made it to training')
             sess.run(g.train_op_gen)
             for epoch in tqdm(range(1, hp.num_epochs+1)): 

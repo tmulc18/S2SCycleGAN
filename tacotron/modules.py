@@ -251,6 +251,44 @@ def attention_decoder(inputs, memory, num_units=None, scope="attention_decoder",
                                        dtype=tf.float32) #( N, T', 16)
     return outputs
 
+def attention_decoder_gan(memory, num_units=None, scope="attention_decoder", reuse=None):
+    '''Applies a GRU to `inputs`, while attending `memory`.
+    Args:
+      inputs: A 3d tensor with shape of [N, T', C']. Decoder inputs.
+      memory: A 3d tensor with shape of [N, T, C]. Outputs of encoder network.
+      seqlens: A 1d tensor with shape of [N,], dtype of int32.
+      num_units: An int. Attention size.
+      scope: Optional scope for `variable_scope`.  
+      reuse: Boolean, whether to reuse the weights of a previous layer
+        by the same name.
+    
+    Returns:
+      A 3d tensor with shape of [N, T, num_units].    
+    '''
+    with tf.variable_scope(scope, reuse=reuse):
+        if num_units is None:
+            num_units = inputs.get_shape().as_list[-1]
+        
+        attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(num_units, 
+                                                                   memory, 
+                                                                   normalize=True,
+                                                                   probability_fn=tf.nn.softmax)
+        decoder_cell = tf.contrib.rnn.GRUCell(num_units)
+        cell_with_attention = tf.contrib.seq2seq.AttentionWrapper(decoder_cell, attention_mechanism, num_units)
+        # initial_state = state = tf.zeros([batch_size, num_units])
+        # for i in range(num_steps):
+        #     output, state = cell_with_attention()
+        outputs = []
+        print(num_units)
+        output,state = tf.zeros(num_units),tf.zeros(num_units)
+        for i in range(100):
+          _output,_state=cell_with_attention(output,state)
+          outputs.append(_output)
+          output,state=_output,_state
+        # outputs, _ = tf.nn.dynamic_rnn(cell_with_attention, inputs, 
+        #                                dtype=tf.float32) #( N, T', 16)
+    return outputs
+
 def prenet(inputs, is_training=True, scope="prenet", reuse=None):
     '''Prenet for Encoder and Decoder.
     Args:

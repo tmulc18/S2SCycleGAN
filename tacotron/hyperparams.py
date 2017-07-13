@@ -9,16 +9,16 @@ class Hyperparams:
     '''Hyper parameters'''
     # mode
     sanity_check = False
-    gan_mode = False
+    gan_mode = True
     
     # data
     #text_file = 'WEB/text.csv'
     #sound_fpath = 'WEB'
     data_path = 'data/'
-    # fpath = '../data/female_us/'
-    # mpath = '../data/male_us/'
-    fpath = '../../cmu_artic/female_us_slt/'#'../data/female_us/'
-    mpath = '../../cmu_artic/male_us_bdl/'#'../data/male_us/'
+    fpath = '../data/female_us/'
+    mpath = '../data/male_us/'
+    # fpath = '../../cmu_artic/female_us_slt/'# desktop
+    # mpath = '../../cmu_artic/male_us_bdl/'# desktop
 
     bin_size_x = (2,3)
     bin_size_y = (2,3)
@@ -51,11 +51,11 @@ class Hyperparams:
     
     # training scheme
     lr = 0.0005 # Paper => Exponential decay
-    logdir =  "logdir_s"if  sanity_check  else "logdir_gan" #"logdir"
-    outputdir = "samples_s" if  sanity_check else "samples_gan" #'samples'
+    logdir =  "logdir_s" if  sanity_check  else "logdir_gan" if gan_mode else "logdir"
+    outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else "samples"
     batch_size = 32
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
-    k = 2 # number of times to train the generator for each discriminator train
+    k = 3 # number of times to train the generator for each discriminator train
     loss_type = "l1" # Or you can test "l2"
     num_samples = 32
     
