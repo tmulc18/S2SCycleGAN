@@ -43,19 +43,19 @@ class Hyperparams:
     # model
     #embed_size = 256 # alias = E
     embed_size = n_fft/2 #n_mels
-    encoder_num_banks = 16
+    encoder_num_banks = 8 # Paper => 16
     decoder_num_banks = 8
     num_highwaynet_blocks = 4
     r = 5 # Reduction factor. Paper => 2, 3, 5
     norm_type = 'ins'  # a normalizer function. value: bn, ln, ins, or None
     
     # training scheme
+    k = 3 # number of times to train the generator for each discriminator train
     lr = 0.0005 # Paper => Exponential decay
     logdir =  "logdir_s" if  sanity_check  else "logdir_gan" if gan_mode else "logdir"
     outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else "samples"
     batch_size = 32
     num_epochs = 10000 if not sanity_check else 40 # Paper => 2M global steps!
-    k = 3 # number of times to train the generator for each discriminator train
     loss_type = "l1" # Or you can test "l2"
     num_samples = 32
     

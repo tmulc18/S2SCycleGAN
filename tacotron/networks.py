@@ -201,7 +201,7 @@ def decode2(inputs, is_training=True, scope="decoder2", reuse=None):
         dec += prenet_out
          
         ## Highway Nets
-        for i in range(4):
+        for i in range(hp.num_highwaynet_blocks):
             dec = highwaynet(dec, num_units=hp.embed_size//2, 
                                  scope='highwaynet_{}'.format(i)) # (N, T, E/2)
          
