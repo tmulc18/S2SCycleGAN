@@ -43,16 +43,24 @@ class Graph:
                 self.memory_gen = encode(self.x, is_training=is_training) # (N, T, E)
                 
                 # Decoder 
-                # decode_length = 50
-                # self.outputs1_gen = tf.zeros_like(self.y)
-                # for j in range(decode_length):
-                #     self._outputs1_gen = decode1(self.outputs1_gen,
-                #                             self.memory_gen,
-                #                             is_training=is_training)
-                    
-                #     self.outputs1_gen[:,j,:] = self._outputs1_gen
-                self.outputs1_get = decode1_gan(self.memory_gen,is_training=is_training)
-                self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
+                decode_length = 50
+                self._outputs1_gen = tf.zeros([hp.batch_size,1,hp.n_mels*hp.r])
+                outputs1_gen_list = []
+                for j in range(decode_length):
+                    if j == 0:
+                        reuse = None
+                    else: 
+                        reuse = True
+                    self._outputs1_gen = decode1(self._outputs1_gen,
+                                            self.memory_gen,
+                                            is_training=is_training,reuse=reuse)
+                    outputs1_gen_list.append(self._outputs1_gen)
+                self.outputs1_gen = tf.concat(outputs1_gen_list,1)
+
+                # self.outputs1_gen = decode1_gan(self.memory_gen,is_training=is_training)
+                # self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
+
+
                 # self.outputs1_gen = decode1(self.decoder_inputs, 
                 #                          self.memory_gen,
                 #                          is_training=is_training) # (N, T', hp.n_mels*hp.r)

@@ -165,36 +165,6 @@ def decode1(decoder_inputs, memory, is_training=True, scope="decoder1", reuse=No
     
     return outputs
     
-def decode1_gan(memory, is_training=True, scope="decoder1", reuse=None):
-    '''
-    Args:
-      decoder_inputs: A 3d tensor with shape of [N, T', C'], where C'=hp.n_mels*hp.r, 
-        dtype of float32. Shifted melspectrogram of sound files. 
-      memory: A 3d tensor with shape of [N, T, C], where C=hp.embed_size.
-      is_training: Whether or not the layer is in training mode.
-      scope: Optional scope for `variable_scope`
-      reuse: Boolean, whether to reuse the weights of a previous layer
-        by the same name.
-        
-    Returns
-      Predicted melspectrogram tensor with shape of [N, T', C'].
-    '''
-    with tf.variable_scope(scope, reuse=reuse):
-        # Decoder pre-net
-        # dec = prenet_gan(decoder_inputs, is_training=is_training) # (N, T', E/2)
-        
-        # Attention RNN
-        dec = attention_decoder_gan(memory, num_units=hp.embed_size) # (N, T', E)
-
-        # Decoder RNNs
-        dec += gru(dec, hp.embed_size, False, scope="decoder_gru1") # (N, T', E)
-        dec += gru(dec, hp.embed_size, False, scope="decoder_gru2") # (N, T', E)
-          
-        # Outputs => (N, T', hp.n_mels*hp.r)
-        out_dim = decoder_inputs.get_shape().as_list()[-1]
-        outputs = tf.layers.dense(dec, out_dim) 
-    
-    return outputs
 
 def decode2(inputs, is_training=True, scope="decoder2", reuse=None):
     '''
