@@ -23,7 +23,7 @@ class Hyperparams:
     bin_size_x = (2,3)
     bin_size_y = (2,3)
 
-    max_len = 48
+    max_len = 48 #unsure about what this is used for
     # max_len = 100 if not sanity_check else 30 # maximum length of text
     # min_len = 10 if not sanity_check else 20 # minimum length of text
     
@@ -50,7 +50,7 @@ class Hyperparams:
     norm_type = 'ins'  # a normalizer function. value: bn, ln, ins, or None
     
     # training scheme
-    k = 5 # number of times to train the generator for each discriminator train
+    k = 2 # number of times to train the generator for each discriminator train
     lr = 0.0005 # Paper => Exponential decay
     logdir =  "logdir_s" if  sanity_check  else "logdir_gan" if gan_mode else "logdir"
     outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else "samples"
