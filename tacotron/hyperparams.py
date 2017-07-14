@@ -50,7 +50,7 @@ class Hyperparams:
     norm_type = 'ins'  # a normalizer function. value: bn, ln, ins, or None
     
     # training scheme
-    k = 4 # number of times to train the generator for each discriminator train
+    k = 10 # number of times to train the generator for each discriminator train
     lr = 0.0005 # Paper => Exponential decay
     logdir =  "logdir_s" if  sanity_check  else "logdir_gan" if gan_mode else "logdir"
     outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else "samples"
