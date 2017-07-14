@@ -169,7 +169,7 @@ def main():
                     print("Something is broken");break
 
                 # Sampling Audio
-                if epoch % hp.audio_summary == 1:
+                if epoch % hp.audio_summary == 0:
                     print("Sampling")
                     mname = 'gan'
                     og,act,gen = sess.run([g.q,g.z,g.outputs2_gen])
