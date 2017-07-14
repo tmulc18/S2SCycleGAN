@@ -163,11 +163,12 @@ def main():
                     sample_audio(g,sess)
 
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
+                    
+                    #sess.run(g.train_op_dis,options=options,run_metadata=run_metadata)
+                    sess.run(g.train_op_dis)
                     for _ in range(hp.k):
-                        #sess.run(g.train_op_dis,options=options,run_metadata=run_metadata)
-                        sess.run(g.train_op_dis)
-                    #sess.run(g.train_op_gen,options=options,run_metadata=run_metadata)
-                    sess.run(g.train_op_gen)
+                        #sess.run(g.train_op_gen,options=options,run_metadata=run_metadata)
+                        sess.run(g.train_op_gen)
 
                     # #Profile Logging
                     # fetched_timeline = timeline.Timeline(run_metadata.step_stats)
