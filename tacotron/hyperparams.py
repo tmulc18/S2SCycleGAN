@@ -60,7 +60,7 @@ class Hyperparams:
     num_samples = 32
 
     # summary scheme
-    audio_summary = 10 #number of epochs until next sample
+    audio_summary = 100 #number of epochs until next sample
     
     # etc
     num_gpus = 2 # If you have multiple gpus, adjust this option, and increase the batch size
