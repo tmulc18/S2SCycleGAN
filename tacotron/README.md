@@ -13,6 +13,10 @@ The mel-scale and linear scale loss look like
 
 <img src="fig/mean_loss2.png">
 
+The adverserial losses look like 
+
+<img src="fig/gan_loss.png">
+
 ## Requirements
   * NumPy >= 1.11.1
   * TensorFlow == 1.2
