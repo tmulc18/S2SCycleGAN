@@ -48,10 +48,7 @@ class Graph:
                 self._outputs1_gen = tf.zeros([hp.batch_size,1,hp.n_mels*hp.r])
                 outputs1_gen_list = []
                 for j in range(decode_length):
-                    if j == 0:
-                        reuse = None
-                    else: 
-                        reuse = True
+                    reuse = None if j == 0 else True
                     self._outputs1_gen += decode1(self._outputs1_gen,
                                             self.memory_gen,
                                             is_training=is_training,reuse=reuse)

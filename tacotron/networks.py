@@ -36,7 +36,7 @@ def encode_dis(inputs, is_training=True, scope="encoder_dis", reuse=None):
         inputs = inputs
         
         # Encoder pre-net
-        prenet_out = prenet(inputs, is_training=is_training) # (N, T, E/2)
+        prenet_out = prenet_dis(inputs, is_training=is_training) # (N, T, E/2)
         
         # Encoder CBHG 
         ## Conv1D bank 
