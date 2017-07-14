@@ -18,7 +18,6 @@ from modules import *
 from networks import encode_dis, encode, decode1, decode2
 import numpy as np
 from prepro import *
-#from prepro import load_vocab
 import tensorflow as tf
 from utils import shift_by_one, restore_shape, spectrogram2wav
 from tensorflow.python.client import timeline
@@ -38,14 +37,14 @@ class Graph:
                 self.x = tf.placeholder(tf.float32, shape=(None, None,hp.n_mels*hp.r))
                 self.y = tf.placeholder(tf.float32, shape=(None, None, hp.n_mels*hp.r))
 
-            self.decoder_inputs = shift_by_one(self.y) 
+            #self.decoder_inputs = shift_by_one(self.y) 
             
             with tf.variable_scope("Generator"):
                 # Encoder
                 self.memory_gen = encode(self.q, is_training=is_training) # (N, T, E)
                 
                 # Decoder 
-                decode_length = 50
+                decode_length = int((hp.bin_size_y[1]*hp.sr-(hp.win_length-1))/((hp.hop_length)*hp.r)) # about 50
                 self._outputs1_gen = tf.zeros([hp.batch_size,1,hp.n_mels*hp.r])
                 outputs1_gen_list = []
                 for j in range(decode_length):
@@ -53,15 +52,13 @@ class Graph:
                         reuse = None
                     else: 
                         reuse = True
-                    self._outputs1_gen = decode1(self._outputs1_gen,
+                    self._outputs1_gen += decode1(self._outputs1_gen,
                                             self.memory_gen,
                                             is_training=is_training,reuse=reuse)
                     outputs1_gen_list.append(self._outputs1_gen)
                 self.outputs1_gen = tf.concat(outputs1_gen_list,1)
                 self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
 
-                # self.outputs1_gen = decode1_gan(self.memory_gen,is_training=is_training)
-                # self.outputs2_gen = decode2(self.outputs1_gen,is_training=is_training)
 
             with tf.variable_scope("Discriminator"):
                 self.final_state_real = encode_dis(self.z, is_training=is_training)
@@ -78,37 +75,6 @@ class Graph:
                 # Generator Loss
                 self.gen_loss = tf.reduce_mean(tf.squared_difference(self.final_state_fake,1))
 
-                # # Loss
-                # if hp.loss_type=="l1": # L1 loss
-                #     self.loss1 = tf.abs(self.outputs1 - self.y)
-                #     self.loss2 = tf.abs(self.outputs2 - self.z)
-                # else: # L2 loss
-                #     self.loss1 = tf.squared_difference(self.outputs1, self.y)
-                #     self.loss2 = tf.squared_difference(self.outputs2, self.z)
-                
-                # # Target masking
-                # if hp.target_zeros_masking:
-                #     self.loss1 *= tf.to_float(tf.not_equal(self.y, 0.))
-                #     self.loss2 *= tf.to_float(tf.not_equal(self.z, 0.))
-                
-                # self.mean_loss1 = tf.reduce_mean(self.loss1)
-                # self.mean_loss2 = tf.reduce_mean(self.loss2)
-                # self.mean_loss = self.mean_loss1 + self.mean_loss2 
-                
-                # Logging  
-                ## histograms
-                # self.expected1_h = tf.reduce_mean(tf.reduce_mean(self.y, -1), 0)
-                # self.got1_h = tf.reduce_mean(tf.reduce_mean(self.outputs1, -1),0)
-                
-                # self.expected2_h = tf.reduce_mean(tf.reduce_mean(self.z, -1), 0)
-                # self.got2_h = tf.reduce_mean(tf.reduce_mean(self.outputs2, -1),0)
-                
-                # ## images
-                # self.expected1_i = tf.expand_dims(tf.reduce_mean(self.y[:1], -1, keep_dims=True), 1)
-                # self.got1_i = tf.expand_dims(tf.reduce_mean(self.outputs1[:1], -1, keep_dims=True), 1)
-                
-                # self.expected2_i = tf.expand_dims(tf.reduce_mean(self.z[:1], -1, keep_dims=True), 1)
-                # self.got2_i = tf.expand_dims(tf.reduce_mean(self.outputs2[:1], -1, keep_dims=True), 1)
                                                 
                 # Training Scheme
                 dvars = [e for e in self.graph.get_collection('trainable_variables') if 'Discriminator' in e.name]
@@ -136,24 +102,45 @@ class Graph:
                 tf.summary.scalar('dis_loss', self.dis_loss)
                 tf.summary.scalar('gen_loss', self.gen_loss)
                 
-                # tf.summary.histogram('expected_values1', self.expected1_h)
-                # tf.summary.histogram('gotten_values1', self.got1_h)
-                # tf.summary.histogram('expected_values2', self.expected2_h)
-                # tf.summary.histogram('gotten values2', self.got2_h)
-                                
-                # tf.summary.image("expected_values1", self.expected1_i*255)
-                # tf.summary.image("gotten_values1", self.got1_i*255)
-                # tf.summary.image("expected_values2", self.expected2_i*255)
-                # tf.summary.image("gotten_values2", self.got2_i*255)
                 
                 self.merged = tf.summary.merge_all()
          
+def sample_audio(g,sess):
+    """
+    Samples audio from the generator from training examples
+
+    Parameters:
+
+    g : TensorFlow Graph
+
+    sess : TensorFlow Session
+    """
+    mname = 'gan'
+    og,act,gen = sess.run([g.q,g.z,g.outputs2_gen])
+    for i,(s0,s1,s2) in enumerate(zip(og,act,gen)):
+        s0 = restore_shape(s0, hp.win_length//hp.hop_length, hp.r)
+        s1 = restore_shape(s1, hp.win_length//hp.hop_length, hp.r)
+        s2 = restore_shape(s2, hp.win_length//hp.hop_length, hp.r)           
+        # generate wav files
+        if hp.use_log_magnitude:
+            audio0 = spectrogram2wav(np.power(np.e, s0)**hp.power)
+            audio1 = spectrogram2wav(np.power(np.e, s1)**hp.power)
+            audio2 = spectrogram2wav(np.power(np.e, s2)**hp.power)
+        else:
+            s0 = np.where(s0 < 0, 0, s0)
+            s1 = np.where(s1 < 0, 0, s1)
+            s2 = np.where(s2 < 0, 0, s2)
+            audio0 = spectrogram2wav(s0**hp.power)
+            audio1 = spectrogram2wav(s1**hp.power)
+            audio2 = spectrogram2wav(s2**hp.power)
+        write(hp.outputdir + "/gan_{}_org.wav".format(i), hp.sr, audio0)
+        write(hp.outputdir + "/gan_{}_act.wav".format(i), hp.sr, audio1)
+        write(hp.outputdir + "/gan_{}_gen.wav".format(i), hp.sr, audio2)
+
 def main():   
     g = Graph(); print("Training Graph loaded")
     
     with g.graph.as_default():
-        # Load vocabulary 
-        #char2idx, idx2char = load_vocab()
         
         # Training 
         sv = tf.train.Supervisor(logdir=hp.logdir,
@@ -169,41 +156,20 @@ def main():
                     print("Something is broken");break
 
                 # Sampling Audio
-                if epoch % hp.audio_summary == 0:
+                if epoch % hp.audio_summary == 1:
                     print("Sampling")
-                    mname = 'gan'
-                    og,act,gen = sess.run([g.q,g.z,g.outputs2_gen])
-                    for i,(s0,s1,s2) in enumerate(zip(og,act,gen)):
-                        s0 = restore_shape(s0, hp.win_length//hp.hop_length, hp.r)
-                        s1 = restore_shape(s1, hp.win_length//hp.hop_length, hp.r)
-                        s2 = restore_shape(s2, hp.win_length//hp.hop_length, hp.r)           
-                        # generate wav files
-                        if hp.use_log_magnitude:
-                            audio0 = spectrogram2wav(np.power(np.e, s0)**hp.power)
-                            audio1 = spectrogram2wav(np.power(np.e, s1)**hp.power)
-                            audio2 = spectrogram2wav(np.power(np.e, s2)**hp.power)
-                        else:
-                            s0 = np.where(s0 < 0, 0, s0)
-                            s1 = np.where(s1 < 0, 0, s1)
-                            s2 = np.where(s2 < 0, 0, s2)
-                            audio0 = spectrogram2wav(s0**hp.power)
-                            audio1 = spectrogram2wav(s1**hp.power)
-                            audio2 = spectrogram2wav(s2**hp.power)
-                        write(hp.outputdir + "/gan_{}_org.wav".format(i), hp.sr, audio0)
-                        write(hp.outputdir + "/gan_{}_act.wav".format(i), hp.sr, audio1)
-                        write(hp.outputdir + "/gan_{}_gen.wav".format(i), hp.sr, audio2)
-                
+                    sample_audio(g,sess)
 
                 for step in tqdm(range(g.num_batch), total=g.num_batch, ncols=70, leave=False, unit='b'):
                     for _ in range(hp.k):
                         sess.run(g.train_op_dis,options=options,run_metadata=run_metadata)
                     sess.run(g.train_op_gen,options=options,run_metadata=run_metadata)
 
-                    #Profile Logging
-                    fetched_timeline = timeline.Timeline(run_metadata.step_stats)
-                    chrome_trace = fetched_timeline.generate_chrome_trace_format()
-                    with open('timeline/timeline_01_step_%d.json' % step, 'w') as f:
-                        f.write(chrome_trace)
+                    # #Profile Logging
+                    # fetched_timeline = timeline.Timeline(run_metadata.step_stats)
+                    # chrome_trace = fetched_timeline.generate_chrome_trace_format()
+                    # with open('timeline/timeline_01_step_%d.json' % step, 'w') as f:
+                    #     f.write(chrome_trace)
 
                 
                 # Write checkpoint files at every epoch
