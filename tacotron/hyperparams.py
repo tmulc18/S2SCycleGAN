@@ -20,8 +20,8 @@ class Hyperparams:
     # fpath = '../../cmu_artic/female_us_slt/'# desktop
     # mpath = '../../cmu_artic/male_us_bdl/'# desktop
 
-    bin_size_x = (2,3)
-    bin_size_y = (2,3)
+    bin_size_x = (1,2)
+    bin_size_y = (1,2)
 
     max_len = 48 #unsure about what this is used for
     # max_len = 100 if not sanity_check else 30 # maximum length of text
@@ -43,15 +43,15 @@ class Hyperparams:
     # model
     #embed_size = 256 # alias = E
     embed_size = n_fft/2 #n_mels
-    encoder_num_banks = 8 # Paper => 16
+    encoder_num_banks = 10 # Paper => 16
     decoder_num_banks = 8
     num_highwaynet_blocks = 2
     r = 5 # Reduction factor. Paper => 2, 3, 5
     norm_type = 'ins'  # a normalizer function. value: bn, ln, ins, or None
     
     # training scheme
-    k = 10 # number of times to train the generator for each discriminator train
-    lr = 0.0005 # Paper => Exponential decay
+    k = 5 # number of times to train the generator for each discriminator train
+    lr = 0.001 # Paper => Exponential decay
     logdir =  "logdir_s" if  sanity_check  else "logdir_gan" if gan_mode else "logdir"
     outputdir = "samples_s" if  sanity_check else "samples_gan" if gan_mode else "samples"
     batch_size = 32
