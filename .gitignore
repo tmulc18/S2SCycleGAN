@@ -16,3 +16,5 @@ tacotron/logdir_gan/*
 tacotron/samples_gan/*
 tacotron/timeline/*
 !tacotron/timeline/.placeholder
+nbs/modelCycle/*
+!nbs/modelCycle/.placeholder
