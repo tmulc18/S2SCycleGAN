@@ -29,4 +29,4 @@ More works needs to be done in investigating the weighting of the losses and the
 
 So far, removing the skip connections temporarily avoids the cycle consistency loss problem, until this loss explodes.  
 
-<img src="../imgs/segan_cyc_noskip.png",width="200">
+<img src="../imgs/segan_cyc_noskip.png">
