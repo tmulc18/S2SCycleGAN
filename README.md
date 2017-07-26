@@ -48,13 +48,13 @@ One of the concerning points to this attempt was the lack of strong foundation f
 # Future work
 Deep learning is a promising avenue for speech synthesis, especially VC. As the foundation of speech synthesis solidify, I'll continue to attempt VC in a GAN setting in this repo.  The official list of action items is
 
-- [v] Remove skip connections for SEGAN
+- [x] Remove skip connections for SEGAN
 
-- [] CycleGAN for Tacotron GAN
+- [ ] CycleGAN for Tacotron GAN
 
 [//]:# (-[] Reattempt Tacotron GAN after good results)  
 
-- [] Add speaker embedding and train both SEGAN and Tacotron GAN on OpenSLR
+- [ ] Add speaker embedding and train both SEGAN and Tacotron GAN on OpenSLR
 
 # References
 1. Pascual, et al., "[SEGAN: Speech Enhancement Generative Adversarial Network](https://arxiv.org/abs/1703.09452)." March 2017
