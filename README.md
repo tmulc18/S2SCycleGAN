@@ -1,6 +1,6 @@
 # S2SCycleGAN
 The big idea is to create a voice conversion (VC) model using GANs.  
-Two attempts were taken: direct application of [SEGAN](https://arxiv.org/abs/1703.09452) and a novel approach using the [Tacotron](https://arxiv.org/abs/1703.10135) TTS system.  Both raw audio VC and spectrogram VC were attempted.
+Two attempts were taken: direct application of SEGAN and a novel approach using the Tacotron TTS system.  Both raw audio VC and spectrogram VC were attempted.
 <img src="imgs/VC.png">
 Additionally, a cycle-consistency loss was included during training.  Nothing has been successful, yet, and detailed information can be found in the respective folders. Brief overviews of the attempts can be found here in the following subsections.
 
@@ -9,7 +9,7 @@ The idea of voice conversion using GANs (in fact, just deep learning) is a promi
 
 # Data 
 
-Voice conversion was attempted using paired utterances from two speakers (one male and one female).  The data comes for the CMU Artic dataset.  Download data with `downloadData.sh`, or get the data [here](https://www.dropbox.com/sh/ct3bbmerxckbzej/AABXpG8T4z1dUFdswchZABosa?dl=0).
+Voice conversion was attempted using about 1200 paired utterances from two speakers (one male and one female).  The data comes for the CMU Artic dataset.  Download data with `downloadData.sh`, or get the data [here](https://www.dropbox.com/sh/ct3bbmerxckbzej/AABXpG8T4z1dUFdswchZABosa?dl=0).
 
 # SEGAN
 The SEGAN approach to VC is a direct application of methods described in the paper. where the noisy input was replaced with the one speaker and the clean audio was replaced with the other speaker.
@@ -23,7 +23,7 @@ One of the concerning points to this attempt was the lack of strong foundation f
 
 # Setup
 1. Download the data with `sh downloadData.sh`
-2. Install python dependencies with `conda env -f env.yml`
+2. Install python dependencies into a new conda environment with `conda create -f env.yml`
 
 ### Port Audio and PyAudio
 
@@ -48,13 +48,13 @@ One of the concerning points to this attempt was the lack of strong foundation f
 # Future work
 Deep learning is a promising avenue for speech synthesis, especially VC. As the foundation of speech synthesis solidify, I'll continue to attempt VC in a GAN setting in this repo.  The official list of action items is
 
-[v] Remove skip connections for SEGAN
+- [v] Remove skip connections for SEGAN
 
-[] Cycle consistency loss for Tacotron GAN
+- [] CycleGAN for Tacotron GAN
 
-[] Reattempt Tacotron GAN after 
+[//]:# (-[] Reattempt Tacotron GAN after good results)  
 
-[] Add speaker embedding and train both SEGAN and Tacotron GAN on OpenSLR
+- [] Add speaker embedding and train both SEGAN and Tacotron GAN on OpenSLR
 
 # References
 1. Pascual, et al., "[SEGAN: Speech Enhancement Generative Adversarial Network](https://arxiv.org/abs/1703.09452)." March 2017

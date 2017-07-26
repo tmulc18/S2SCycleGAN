@@ -1,8 +1,18 @@
-# A (Heavily Documented) TensorFlow Implementation of Tacotron: A Fully End-to-End Text-To-Speech Synthesis Model
+# Tacotron GAN
 
-## **Major History**
+
+## Model Description
+The general idea is that we want to be able to use the powerful Tacotron model in a GAN setting to translate sequences.  
+
+The generator is almost exactly the Tacotron TTS model expect that it has linear-scale spectrograms as inputs and contains no character embedding. 
+
+<img src="../imgs/Tacotron_generator.png">
+
+The descriminator is a model that has the architecure of the encoder except that it has linear-scale spectrograms as inputs and has one additionaly FC layer that receives the output of the last timestep from the GRU.
+
+## Progress Summary
   * Started adversarial training
-  * Found errors in Attention Mechanism, lack of scheduled sampling, and `eval.py` when using multiple gpus.  Still not fixed.
+  * After reading the paper the Attention Mechanism should be Luong, and `eval.py` doesn't work when using multiple gpus.
   * Around 16 hours of training on gtx 1060 giving male mel-spec as input and having linear-scale and mel-scale as outputs yeilds this training curve.
 
 <img src="fig/mean_loss.png">
@@ -17,21 +27,11 @@ The adverserial losses look like
 
 <img src="fig/gan_loss.png">
 
-## Requirements
-  * NumPy >= 1.11.1
-  * TensorFlow == 1.2
-  * librosa
-  * tqdm
-
-## Data
-See root download script.
-
-Data is from CMU and contains about 1200 paired utterance spoken by a male and female.
 
 
 ## File description
   * `hyperparams.py` includes all hyper parameters that are needed.
-  * `prepare_pavoque.py` creates sliced sound files from raw sound data, and constructs necessary information.
+  * `prepro.py` creates sliced sound files from raw sound data, and constructs necessary information.
   * `prepro.py` loads vocabulary, training/evaluation data.
   * `data_load.py` loads data and put them in queues so multiple mini-bach data are generated in parallel.
   * `utils.py` has several custom operational functions.
@@ -40,7 +40,7 @@ Data is from CMU and contains about 1200 paired utterance spoken by a male and f
   * `train.py` is for training on paired speech.
   * `train_gan.py` is for training advarsarially using LSGAN
   * `eval.py` is for sample synthesis.
-  * `eval_gan.py` is ofr sample synthesis using gan_model
+  * `eval_gan.py` is  sample synthesis using gan_model
   
 
 ## Training
@@ -49,7 +49,7 @@ Data is from CMU and contains about 1200 paired utterance spoken by a male and f
   * STEP 3. Run `train.py`. or `train_multi_gpus.py` if you have more than one gpu.
 
 ## Sample Synthesis
-  * Run `eval.py` to get samples.
+  * Run `eval_gan.py` to get samples.
 
 ### Acknowledgements
-I would like to show my respect to Ryan, the author of most of the tacotron code.
+I would like to show my respect to Ryan, the author of almost all the tacotron code.
